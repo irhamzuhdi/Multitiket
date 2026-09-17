@@ -1,79 +1,68 @@
 import { defineConfig, devices } from '@playwright/test';
+import path from 'path';
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+export const AUTH_FILE = path.join(__dirname, '.auth/user.json');
 
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
 export default defineConfig({
   testDir: './tests',
-  /* Run tests in files in parallel */
   fullyParallel: true,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
-  use: {
-    /* Base URL to use in actions like `await page.goto('')`. */
-    // baseURL: 'http://localhost:3000',
 
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+  use: {
     trace: 'on-first-retry',
   },
 
-  /* Configure projects for major browsers */
   projects: [
+    // ── Setup project: login sekali, simpan session ──────────────────
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: 'setup',
+      testMatch: '**/auth.setup.ts',
+      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     },
 
+    // ── CMS tests (tidak perlu web auth) ────────────────────────────
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      name: 'CMS',
+      testMatch: '**/tests/CMS/**/*.spec.ts',
+      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     },
 
+    // ── Web tests: Login / Register / Reset tidak butuh auth ─────────
     {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      name: 'web-no-auth',
+      testMatch: [
+        '**/tests/web/Login/**/*.spec.ts',
+        '**/tests/web/Register/**/*.spec.ts',
+        '**/tests/web/ResetPassword/**/*.spec.ts',
+        '**/tests/web/Home/**/*.spec.ts',
+        '**/tests/web/StaticPages/**/*.spec.ts',
+        '**/tests/web/FlightSearch/**/*.spec.ts',
+      ],
+      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     },
 
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
+    // ── Web tests yang butuh login ───────────────────────────────────
+    {
+      name: 'web-auth',
+      testMatch: [
+        '**/tests/web/MyFlightBooking/**/*.spec.ts',
+        '**/tests/web/MyHotelBooking/**/*.spec.ts',
+        '**/tests/web/Profile/**/*.spec.ts',
+        '**/tests/web/HasilPencarian/**/*.spec.ts',
+        '**/tests/web/ReviewFlight/**/*.spec.ts',
+        '**/tests/web/DataPemesan/**/*.spec.ts',
+        '**/tests/web/FlightSummary/**/*.spec.ts',
+        '**/tests/web/Payment/**/*.spec.ts',
+      ],
+      use: {
+        ...devices['Desktop Chrome'],
+        channel: 'chrome',
+        storageState: AUTH_FILE,
+      },
+      dependencies: ['setup'],
+    },
   ],
-
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
 });
