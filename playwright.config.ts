@@ -20,7 +20,7 @@ export default defineConfig({
     {
       name: 'setup',
       testMatch: '**/auth.setup.ts',
-      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+      use: { ...devices['Desktop Chrome'], channel: 'chrome', headless: false },
     },
 
     // ── CMS tests (tidak perlu web auth) ────────────────────────────

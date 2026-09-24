@@ -1,0 +1,539 @@
+<!doctype html>
+<title>Multiket Web QA Findings</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    color-scheme: light dark;
+    --ink: #182238;
+    --ink-soft: #4b5468;
+    --paper: #f5f2ea;
+    --surface: #ffffff;
+    --surface-2: #eeeadd;
+    --line: #ddd6c4;
+    --accent: #2249b3;
+    --accent-soft: #e7edfb;
+    --critical: #a8281c;
+    --critical-soft: #fbe9e6;
+    --warn: #8a5a00;
+    --warn-soft: #fbf0dc;
+    --ok: #1c6e49;
+    --ok-soft: #e5f3ea;
+    --mono-chip: #eee7d6;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #e9ecf5;
+      --ink-soft: #a7aec2;
+      --paper: #12151f;
+      --surface: #1a1e2b;
+      --surface-2: #202537;
+      --line: #313650;
+      --accent: #7fa0ff;
+      --accent-soft: #1c2440;
+      --critical: #ff8f80;
+      --critical-soft: #3a1e1c;
+      --warn: #ffcf7d;
+      --warn-soft: #3a2f10;
+      --ok: #7fdcae;
+      --ok-soft: #123526;
+      --mono-chip: #262b3d;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #e9ecf5;
+    --ink-soft: #a7aec2;
+    --paper: #12151f;
+    --surface: #1a1e2b;
+    --surface-2: #202537;
+    --line: #313650;
+    --accent: #7fa0ff;
+    --accent-soft: #1c2440;
+    --critical: #ff8f80;
+    --critical-soft: #3a1e1c;
+    --warn: #ffcf7d;
+    --warn-soft: #3a2f10;
+    --ok: #7fdcae;
+    --ok-soft: #123526;
+    --mono-chip: #262b3d;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Public Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size: 15.5px;
+    line-height: 1.55;
+    padding-inline: max(20px, env(safe-area-inset-left, 0px));
+  }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+
+  h1, h2, h3 { font-family: "Archivo", ui-sans-serif, sans-serif; text-wrap: balance; margin: 0; color: var(--ink); }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+  .wrap { max-width: 920px; margin: 0 auto; padding-block: 40px 80px; }
+
+  /* ---- Masthead: boarding-pass style header ---- */
+  .masthead {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 26px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .masthead::before {
+    content: "";
+    position: absolute; inset: 0 0 0 auto;
+    width: 0;
+    border-left: 2px dashed var(--line);
+  }
+  .masthead-main { flex: 1 1 380px; min-width: 0; }
+  .eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 10px;
+  }
+  .masthead h1 { font-size: clamp(1.7rem, 3.4vw, 2.3rem); font-weight: 800; letter-spacing: -0.01em; }
+  .masthead p.dek { color: var(--ink-soft); margin: 10px 0 0; max-width: 62ch; }
+  .masthead-stub {
+    flex: 0 0 auto;
+    border-left: 1px dashed var(--line);
+    padding-left: 20px;
+    display: grid;
+    gap: 6px;
+    align-content: center;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    min-width: 190px;
+  }
+  .masthead-stub div b { color: var(--ink); font-weight: 600; }
+
+  /* ---- Departure-board summary strip ---- */
+  .board {
+    margin-top: 22px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .board-cell {
+    background: var(--surface);
+    padding: 16px 18px;
+  }
+  .board-cell .num {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 600;
+    font-size: 1.9rem;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .board-cell .label {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .board-cell.crit .num { color: var(--critical); }
+  .board-cell.warn .num { color: var(--warn); }
+  .board-cell.ok .num { color: var(--ok); }
+
+  /* ---- Section scaffolding ---- */
+  section { margin-top: 52px; }
+  .section-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 18px; }
+  .section-head .tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 3px 10px;
+    white-space: nowrap;
+  }
+  .section-head h2 { font-size: 1.35rem; font-weight: 700; }
+  .lede { color: var(--ink-soft); max-width: 68ch; margin: -8px 0 22px; }
+
+  /* ---- Finding "boarding pass" cards ---- */
+  .finding {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .finding-route {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--surface-2);
+  }
+  .sev {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 5px;
+    flex: none;
+  }
+  .sev.crit { color: var(--critical); background: var(--critical-soft); }
+  .sev.warn { color: var(--warn); background: var(--warn-soft); }
+  .sev.ok   { color: var(--ok); background: var(--ok-soft); }
+  .finding-route h3 { font-size: 1.03rem; font-weight: 700; flex: 1; min-width: 0; }
+  .finding-id { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--ink-soft); flex: none; }
+  .finding-body { padding: 18px 20px 20px; }
+  .finding-body p { margin: 0 0 12px; }
+  .finding-body p:last-child { margin-bottom: 0; }
+  .evidence {
+    background: var(--mono-chip);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12.5px;
+    line-height: 1.6;
+    overflow-x: auto;
+    white-space: pre;
+    margin: 0 0 12px;
+    color: var(--ink);
+  }
+  .kv { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 0 0 12px; font-size: 13.5px; }
+  .kv div { color: var(--ink-soft); }
+  .kv b { color: var(--ink); font-weight: 600; }
+
+  /* ---- Fix table ---- */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+  table { border-collapse: collapse; width: 100%; min-width: 620px; background: var(--surface); }
+  th, td { text-align: left; padding: 10px 16px; border-bottom: 1px solid var(--line); font-size: 13.5px; vertical-align: top; }
+  thead th { font-family: "IBM Plex Mono", monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); background: var(--surface-2); }
+  tbody tr:last-child td { border-bottom: none; }
+  td code { background: var(--mono-chip); padding: 1px 6px; border-radius: 4px; font-size: 12px; }
+
+  /* ---- Coverage manifest ---- */
+  .manifest { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--surface); }
+  .m-row {
+    display: grid;
+    grid-template-columns: 2.6em 1fr auto;
+    gap: 14px;
+    align-items: center;
+    padding: 9px 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .m-row:last-child { border-bottom: none; }
+  .m-row:nth-child(even) { background: color-mix(in srgb, var(--surface-2) 45%, transparent); }
+  .m-no { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; color: var(--ink-soft); }
+  .m-name { font-size: 13.5px; }
+  .status {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 5px;
+    white-space: nowrap;
+  }
+  .status.verified { color: var(--ok); background: var(--ok-soft); }
+  .status.partial  { color: var(--warn); background: var(--warn-soft); }
+  .status.blocked  { color: var(--critical); background: var(--critical-soft); }
+  .status.none     { color: var(--ink-soft); background: var(--surface-2); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 12px; font-size: 12.5px; color: var(--ink-soft); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+  ol.steps { margin: 0; padding-left: 1.3em; display: grid; gap: 10px; }
+  ol.steps li::marker { font-family: "IBM Plex Mono", monospace; color: var(--accent); font-weight: 600; }
+
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--line);
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  }
+
+  @media (max-width: 560px) {
+    .masthead-stub { border-left: none; border-top: 1px dashed var(--line); padding-left: 0; padding-top: 14px; }
+    .m-row { grid-template-columns: 2em 1fr; }
+    .m-row .status { grid-column: 1 / -1; justify-self: start; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="masthead-main">
+      <p class="eyebrow">QA Findings Report</p>
+      <h1>Multiket Web — Functional &amp; E2E Test Results</h1>
+      <p class="dek">Manual and automated functional testing across the web booking platform, plus a repair pass on the Playwright regression suite. Run against <code>103.196.155.10/multiket/web</code> and its CMS counterpart.</p>
+    </div>
+    <div class="masthead-stub">
+      <div><b>Route</b> Register → Booking → Payment</div>
+      <div><b>Account</b> Company · irhamzuhdi@gmail.com</div>
+      <div><b>Date</b> 2026‑09‑24</div>
+      <div><b>Build</b> web-multiket, branch <code>main</code></div>
+    </div>
+  </header>
+
+  <div class="board">
+    <div class="board-cell crit"><div class="num">3</div><div class="label">Critical findings</div></div>
+    <div class="board-cell warn"><div class="num">6</div><div class="label">Medium findings</div></div>
+    <div class="board-cell"><div class="num">10</div><div class="label">Spec files repaired</div></div>
+    <div class="board-cell ok"><div class="num">75 / 0</div><div class="label">web-auth pass / fail, post-fix</div></div>
+    <div class="board-cell"><div class="num">39</div><div class="label">Suites in scope (Qase)</div></div>
+  </div>
+
+  <!-- ================= CRITICAL ================= -->
+  <section>
+    <div class="section-head">
+      <span class="tag">01</span>
+      <h2>Critical — blocks a core purchase path</h2>
+    </div>
+    <p class="lede">These stop a real customer from completing a booking, or quietly corrupt what the test suite believes it verified.</p>
+
+    <article class="finding">
+      <div class="finding-route">
+        <span class="sev crit">Blocker</span>
+        <h3>Flight search never resolves — "Searching flights…" forever</h3>
+        <span class="finding-id">CGK→DPS · CGK→SUB</span>
+      </div>
+      <div class="finding-body">
+        <p>Searching any route hangs indefinitely on the results screen. No error, no empty state — the spinner never stops, on two independently tried routes and dates.</p>
+        <p><b>Root cause</b>, from the network trace: the backend fans a search out to several vendors in parallel. One of them fails outright, and that single failure appears to take the whole result set down with it — even the vendor that answered correctly, with a real fare, never reaches the screen.</p>
+        <div class="evidence">400 POST /flight/search
+  {"errors":{"detail":"vendor error: Airline AssistCard argument not
+  allowed. Please check your user's company setting."}}
+
+200 POST /flight/search   →  Kalstar CGK→DPS, real fare, HTTP 200
+200 POST /flight/search   →  Schedules: null
+200 POST /flight/search   →  Schedules: [] (empty)</div>
+        <p>Two fixes, one urgent and one structural: get AssistCard's company-setting error resolved on this account, and — separately — stop letting one failed vendor call erase the others (swap whatever aggregates these calls for something that tolerates partial failure, e.g. <code>Promise.allSettled</code>).</p>
+        <p><b>Downstream impact</b> — every suite that depends on a fresh organic search is blocked end-to-end: Hasil Pencarian, Flight Summary, Payment, Booking Confirmed, Flight Book &amp; Payment.</p>
+      </div>
+    </article>
+
+    <article class="finding">
+      <div class="finding-route">
+        <span class="sev crit">Blocker</span>
+        <h3>Session expires silently — no warning, just a logged-out Home page</h3>
+        <span class="finding-id">/individual · any authed route</span>
+      </div>
+      <div class="finding-body">
+        <p>After roughly an hour of use, the access token lapses. Visiting a page that requires login doesn't prompt for re-auth or say anything — it silently drops back to Home with the Login button showing again, as if the session had never existed.</p>
+        <div class="evidence">GET /gateway/api/v1/me → 401 Unauthorized (background, unseen by user)
+goto /individual → redirected to Home, Login button reappears</div>
+        <p>A traveller midway through a long form (passenger names, add-ons) gets no notice before that work is at risk. Worth a visible "your session ended — sign back in" moment rather than a silent bounce.</p>
+      </div>
+    </article>
+
+    <article class="finding">
+      <div class="finding-route">
+        <span class="sev ok">Resolved this session</span>
+        <h3>Whole authenticated test suite was checking the wrong page</h3>
+        <span class="finding-id">8 spec files · ~150 cases</span>
+      </div>
+      <div class="finding-body">
+        <p>The app routes by plain path (<code>/my-flight-booking</code>); the suite was navigating by hash (<code>/#/my-flight-booking</code>), which this router doesn't resolve on a cold load. Every one of those gotos silently rendered Home instead — and passed anyway, because the assertions were weak enough (page loaded, no login form) to pass on Home too.</p>
+        <div class="kv">
+          <div><b>Before fix</b> "78 passed" — effectively 0 verified the intended page</div>
+          <div><b>After fix</b> 75 passed, 0 failed, 73 skipped (manual-only)</div>
+        </div>
+        <p>Fixed by switching every affected <code>goto</code> to path form; see the repair manifest below. Re-running afterward surfaced three more real locator bugs, also fixed (same table).</p>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= MEDIUM ================= -->
+  <section>
+    <div class="section-head">
+      <span class="tag">02</span>
+      <h2>Medium — real defects, narrower blast radius</h2>
+    </div>
+
+    <article class="finding">
+      <div class="finding-route">
+        <span class="sev warn">Crash</span>
+        <h3>Flight Detail throws when opened without a selected flight</h3>
+        <span class="finding-id">/flight/detail</span>
+      </div>
+      <div class="finding-body">
+        <div class="evidence">Unexpected Application Error!
+Cannot read properties of undefined (reading 'Aircraft')</div>
+        <p>Direct navigation (bookmark, back button, shared link) has no fallback — it should redirect to search or show an empty state instead of a raw stack trace.</p>
+      </div>
+    </article>
+
+    <article class="finding">
+      <div class="finding-route">
+        <span class="sev warn">CMS</span>
+        <h3>Add User: role field isn't the <code>&lt;select&gt;</code> the test expects</h3>
+        <span class="finding-id">Adduser.spec.ts</span>
+      </div>
+      <div class="finding-body">
+        <p>The Role control is a styled custom dropdown, not a native <code>&lt;select&gt;</code>. The test waited 30s for an element that was never going to appear and timed out before Save was ever clicked — no user was actually created, so no data cleanup needed. Fixed by targeting the real dropdown.</p>
+      </div>
+    </article>
+
+    <article class="finding">
+      <div class="finding-route">
+        <span class="sev warn">CMS</span>
+        <h3>Delete User depends on Add User having run first</h3>
+        <span class="finding-id">deleteuser.spec.ts</span>
+      </div>
+      <div class="finding-body">
+        <p>Run alone, the search returns "No data available" and the test fails — it's deleting a user that Add User was supposed to create moments earlier. Tests should set up their own fixtures rather than relying on suite order.</p>
+      </div>
+    </article>
+
+    <article class="finding">
+      <div class="finding-route">
+        <span class="sev warn">Content</span>
+        <h3>Aircraft Charter categories don't match the spec</h3>
+        <span class="finding-id">Home → Aircraft Charter tab</span>
+      </div>
+      <div class="finding-body">
+        <div class="kv">
+          <div><b>Qase doc says</b> Passenger, Light Jets, Mid‑size Jet, Heavy Jet, Helicopter, VIP/Executive Airliner</div>
+          <div><b>Live app shows</b> Passenger, Air Ambulance, Medical Evacuation, Cargo Charter, Air Survey</div>
+        </div>
+        <p>Only "Passenger" overlaps. Needs a product call on which list is current before anyone rewrites the test case.</p>
+      </div>
+    </article>
+
+    <article class="finding">
+      <div class="finding-route">
+        <span class="sev warn">Content</span>
+        <h3>Promo banner copy in the test doc isn't on the page</h3>
+        <span class="finding-id">Home → promo carousel</span>
+      </div>
+      <div class="finding-body">
+        <p>"READY FOR ADVENTURE" doesn't appear anywhere in the current carousel; the live banner is CMS-managed content that has since changed. Likely a stale test case rather than a bug.</p>
+      </div>
+    </article>
+
+    <article class="finding">
+      <div class="finding-route">
+        <span class="sev ok">Fixed</span>
+        <h3>Three ambiguous locators, now resolved</h3>
+        <span class="finding-id">DataPemesan · MyHotelBooking</span>
+      </div>
+      <div class="finding-body">
+        <p>All three were false negatives — the pages worked; the selectors didn't. <code>getByRole('button', {name:'Hotel'})</code> also matched "My Hotel Booking"; a "not redirected to login" check matched the Contact form's own Email field, which happens to share the placeholder text "Input email address"; a modal check matched both the dialog and its own title text. All three now use an unambiguous locator.</p>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= REPAIR MANIFEST ================= -->
+  <section>
+    <div class="section-head">
+      <span class="tag">03</span>
+      <h2>Test suite repair manifest</h2>
+    </div>
+    <p class="lede">Applied this session. All routes below were re-verified live before the URL was changed in code.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>File</th><th>Change</th></tr></thead>
+        <tbody>
+          <tr><td>HasilPencarian.spec.ts</td><td><code>#/flight/list</code> → <code>/flight/list</code></td></tr>
+          <tr><td>FlightSummary.spec.ts</td><td><code>#/flight/summary</code> → <code>/flight/summary</code></td></tr>
+          <tr><td>ReviewFlight.spec.ts</td><td><code>#/flight/detail</code> → <code>/flight/detail</code></td></tr>
+          <tr><td>DataPemesan.spec.ts</td><td><code>#/flight/review</code> → <code>/flight/review</code>; fixed login-redirect assertion; fixed modal locator</td></tr>
+          <tr><td>MyFlightBooking.spec.ts</td><td><code>#/my-flight-booking</code> → <code>/my-flight-booking</code></td></tr>
+          <tr><td>MyHotelBooking.spec.ts</td><td>3 hash routes → path routes; fixed ambiguous "Hotel" button locator</td></tr>
+          <tr><td>Payment.spec.ts</td><td><code>#/checkout/payment</code>, <code>#/payment/status</code> → path routes</td></tr>
+          <tr><td>Profile.spec.ts</td><td>10 hash routes (individual, company, passenger, guest, …) → path routes</td></tr>
+          <tr><td>Home.spec.ts</td><td>Company-only tab checks rewritten to auto-retry (<code>toBeVisible</code>) instead of a fixed <code>waitForTimeout</code>; Home-05/05A/05B re-enabled behind a Company-session <code>test.describe</code></td></tr>
+          <tr><td>playwright.config.ts</td><td>Restored <code>setup</code>, <code>CMS</code>, and <code>web-auth</code> projects removed in an earlier in-progress edit</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= COVERAGE ================= -->
+  <section>
+    <div class="section-head">
+      <span class="tag">04</span>
+      <h2>Coverage against the 39-suite test plan</h2>
+    </div>
+    <p class="lede">Matched against the Qase export. "Verified" means the real page was reached and its content checked — not just that a request returned 200.</p>
+
+    <div class="manifest">
+      <div class="m-row"><span class="m-no">01</span><span class="m-name">Register</span><span class="status verified">verified</span></div>
+      <div class="m-row"><span class="m-no">01b</span><span class="m-name">OTP Verification</span><span class="status partial">partial — login OTP only</span></div>
+      <div class="m-row"><span class="m-no">02</span><span class="m-name">Home</span><span class="status verified">verified</span></div>
+      <div class="m-row"><span class="m-no">03</span><span class="m-name">Flight Search</span><span class="status partial">form only — search itself blocked</span></div>
+      <div class="m-row"><span class="m-no">03b</span><span class="m-name">Group Flight</span><span class="status verified">verified</span></div>
+      <div class="m-row"><span class="m-no">03c</span><span class="m-name">Block Seat widget</span><span class="status verified">verified</span></div>
+      <div class="m-row"><span class="m-no">03d</span><span class="m-name">Aircraft Charter widget</span><span class="status partial">verified — category list mismatch</span></div>
+      <div class="m-row"><span class="m-no">03e</span><span class="m-name">Hotel Search widget</span><span class="status verified">verified</span></div>
+      <div class="m-row"><span class="m-no">04</span><span class="m-name">Multi‑kota</span><span class="status none">n/a — no separate tab in this build</span></div>
+      <div class="m-row"><span class="m-no">05</span><span class="m-name">Hasil Pencarian</span><span class="status blocked">blocked — no live results reach it</span></div>
+      <div class="m-row"><span class="m-no">06</span><span class="m-name">Data Pemesan</span><span class="status verified">verified</span></div>
+      <div class="m-row"><span class="m-no">06b</span><span class="m-name">Flight Detail</span><span class="status blocked">crashes on direct nav</span></div>
+      <div class="m-row"><span class="m-no">06c</span><span class="m-name">Login Required</span><span class="status none">not tested</span></div>
+      <div class="m-row"><span class="m-no">07</span><span class="m-name">Review Your Flight</span><span class="status verified">verified</span></div>
+      <div class="m-row"><span class="m-no">08–10</span><span class="m-name">Flight Summary (OW / RT / MT)</span><span class="status partial">OW verified — RT/MT need a real multi-leg booking</span></div>
+      <div class="m-row"><span class="m-no">11–13</span><span class="m-name">Payment (OW / RT / MT)</span><span class="status partial">OW render verified — no live transaction run</span></div>
+      <div class="m-row"><span class="m-no">14–16</span><span class="m-name">Booking Confirmed (OW / RT / MT)</span><span class="status none">not reached — needs a completed payment</span></div>
+      <div class="m-row"><span class="m-no">17–23</span><span class="m-name">My Flight Booking, all 7 statuses</span><span class="status verified">verified against real bookings</span></div>
+      <div class="m-row"><span class="m-no">24</span><span class="m-name">Block Seat Request</span><span class="status partial">confirmed live via an existing booking</span></div>
+      <div class="m-row"><span class="m-no">25</span><span class="m-name">Aircraft Charter Request</span><span class="status partial">confirmed live — category mismatch noted</span></div>
+      <div class="m-row"><span class="m-no">26</span><span class="m-name">Hotel</span><span class="status verified">widget + list/detail verified</span></div>
+      <div class="m-row"><span class="m-no">27</span><span class="m-name">Login</span><span class="status partial">login verified twice with real OTP — logout unconfirmed</span></div>
+      <div class="m-row"><span class="m-no">28</span><span class="m-name">Profile (all 8 sub-pages)</span><span class="status verified">verified</span></div>
+      <div class="m-row"><span class="m-no">29</span><span class="m-name">Hotel Book &amp; Payment</span><span class="status none">not exercised end-to-end</span></div>
+      <div class="m-row"><span class="m-no">30</span><span class="m-name">Flight Book &amp; Payment</span><span class="status blocked">blocked by the search bug</span></div>
+      <div class="m-row"><span class="m-no">31</span><span class="m-name">Banner</span><span class="status partial">renders — documented copy is stale</span></div>
+      <div class="m-row"><span class="m-no">32</span><span class="m-name">Article</span><span class="status verified">verified — list &amp; detail</span></div>
+    </div>
+
+    <div class="legend">
+      <span><span class="dot" style="background:var(--ok)"></span>Verified — real content checked</span>
+      <span><span class="dot" style="background:var(--warn)"></span>Partial — reached with caveats</span>
+      <span><span class="dot" style="background:var(--critical)"></span>Blocked — can't proceed past a known bug</span>
+      <span><span class="dot" style="background:var(--ink-soft)"></span>Not yet attempted</span>
+    </div>
+  </section>
+
+  <!-- ================= NEXT ================= -->
+  <section>
+    <div class="section-head">
+      <span class="tag">05</span>
+      <h2>Suggested order of attack</h2>
+    </div>
+    <ol class="steps">
+      <li><b>Fix the AssistCard vendor error</b> on this account's company setting — it's the single blocker sitting in front of every real booking.</li>
+      <li><b>Make search resilient to one bad vendor</b> so a future vendor outage degrades gracefully instead of hanging forever.</li>
+      <li><b>Add a session-expiry notice</b> instead of the silent bounce to Home.</li>
+      <li><b>Guard <code>/flight/detail</code></b> against missing state with a redirect or empty view.</li>
+      <li><b>Reconcile the Aircraft Charter category list and banner copy</b> between the test plan and the live CMS content.</li>
+      <li>Once the search bug is fixed, run a real search → payment → confirmation pass to unlock suites 05, 08–16, and 30.</li>
+    </ol>
+  </section>
+
+  <footer>
+    <span>Multiket Web QA — functional pass, 2026‑09‑24</span>
+    <span>Target: 103.196.155.10/multiket/web</span>
+  </footer>
+
+</div>

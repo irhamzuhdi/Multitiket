@@ -7,7 +7,7 @@ import { BASE_URL } from '../helpers/auth';
  * Session di-inject via storageState dari auth.setup.ts
  */
 
-const SUMMARY_URL = `${BASE_URL}/#/flight/summary`;
+const SUMMARY_URL = `${BASE_URL}/flight/summary`;
 
 // ─── FSOW (Flight Summary One Way) ───────────────────────────────────────────
 

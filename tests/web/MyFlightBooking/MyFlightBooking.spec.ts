@@ -6,7 +6,7 @@ import { BASE_URL } from '../helpers/auth';
  * Session di-inject via storageState dari auth.setup.ts
  */
 
-const MFB_URL = `${BASE_URL}/#/my-flight-booking`;
+const MFB_URL = `${BASE_URL}/my-flight-booking`;
 
 // ─── MFB Daftar Booking ───────────────────────────────────────────────────────
 

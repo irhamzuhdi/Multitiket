@@ -7,8 +7,8 @@ import { BASE_URL } from '../helpers/auth';
  * Session di-inject via storageState dari auth.setup.ts
  */
 
-const PAYMENT_URL = `${BASE_URL}/#/checkout/payment`;
-const PAYMENT_STATUS_URL = `${BASE_URL}/#/payment/status`;
+const PAYMENT_URL = `${BASE_URL}/checkout/payment`;
+const PAYMENT_STATUS_URL = `${BASE_URL}/payment/status`;
 
 // ─── POW (Payment One Way) ────────────────────────────────────────────────────
 

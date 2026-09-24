@@ -8,7 +8,7 @@ import { BASE_URL } from '../helpers/auth';
  */
 
 // URL hasil pencarian dengan parameter
-const SEARCH_URL = `${BASE_URL}/#/flight/list`;
+const SEARCH_URL = `${BASE_URL}/flight/list`;
 
 // HasilCari-01
 test('[HasilCari-01] Halaman hasil pencarian menampilkan elemen UI yang benar', async ({ page }) => {

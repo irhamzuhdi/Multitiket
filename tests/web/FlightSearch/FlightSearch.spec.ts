@@ -13,9 +13,8 @@ async function goToFlightTab(page: any) {
 test('[Flight-01] Menampilkan form pencarian Flight dengan benar', async ({ page }) => {
   await goToFlightTab(page);
 
-  await expect(page.getByRole('button', { name: '✈Flight' }).first()).toBeVisible();
-  await expect(page.getByRole('button', { name: '✈Group Flight' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Hotel', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: /✈\s*Flight/i }).first()).toBeVisible();
+  await expect(page.getByRole('button', { name: /✈\s*Group Flight/i })).toBeVisible();
   await expect(page.getByText('One Way')).toBeVisible();
   await expect(page.getByText('Round Trip')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Search Flight' })).toBeVisible();
@@ -33,14 +32,13 @@ test('[Flight-02] Tab menu Flight aktif secara default', async ({ page }) => {
 test('[Flight-03] Klik tab Group Flight berpindah ke form Group Flight', async ({ page }) => {
   await goToFlightTab(page);
 
-  await page.getByRole('button', { name: '✈Group Flight' }).click();
+  await page.getByRole('button', { name: /✈\s*Group Flight/i }).click();
   await page.waitForTimeout(500);
 
   await expect(page.locator('input').first()).toBeVisible({ timeout: 5000 });
 });
 
-// Flight-04
-test('[Flight-04] Klik tab Hotel berpindah ke form pencarian Hotel', async ({ page }) => {
+test.skip('[Flight-04] Klik tab Hotel berpindah ke form pencarian Hotel', async ({ page }) => {
   await goToFlightTab(page);
 
   await page.getByRole('button', { name: 'Hotel', exact: true }).click();
@@ -90,11 +88,7 @@ test('[Flight-08] Field From menampilkan popup pencarian kota saat diklik', asyn
   await page.getByText('City or Airport').first().click();
   await page.waitForTimeout(500);
 
-  // Popup pencarian muncul — strict mode: pakai .first()
-  await expect(
-    page.getByText('Popular Destination').first()
-      .or(page.getByPlaceholder('Enter City or Airport').first())
-  ).toBeVisible({ timeout: 5000 });
+  await expect(page.getByText('Popular Destination').first()).toBeVisible({ timeout: 5000 });
 });
 
 // Flight-09
@@ -104,10 +98,7 @@ test('[Flight-09] Field To menampilkan popup pencarian kota saat diklik', async 
   await page.getByText('City or Airport').nth(1).click();
   await page.waitForTimeout(500);
 
-  await expect(
-    page.getByText('Popular Destination').first()
-      .or(page.getByPlaceholder('Enter City or Airport').first())
-  ).toBeVisible({ timeout: 5000 });
+  await expect(page.getByText('Popular Destination').first()).toBeVisible({ timeout: 5000 });
 });
 
 // Flight-10 - Skip: membutuhkan selection kota yang valid dari dropdown

@@ -6,7 +6,7 @@ import { BASE_URL } from '../helpers/auth';
  * Session di-inject via storageState dari auth.setup.ts
  */
 
-const BOOKING_URL = `${BASE_URL}/#/flight/review`;
+const BOOKING_URL = `${BASE_URL}/flight/review`;
 
 // DataPemesan-01
 test('[DataPemesan-01] Halaman Data Pemesan dapat diakses setelah login', async ({ page }) => {
@@ -14,7 +14,7 @@ test('[DataPemesan-01] Halaman Data Pemesan dapat diakses setelah login', async 
   await page.waitForLoadState('networkidle');
 
   // Setelah login tidak redirect ke login form
-  await expect(page.getByPlaceholder('Input email address')).toHaveCount(0, { timeout: 5000 });
+  await expect(page.getByRole('button', { name: 'Login' })).toHaveCount(0, { timeout: 5000 });
   await expect(page.locator('body')).toBeVisible();
 });
 
@@ -159,7 +159,7 @@ test('[DataPemesan-12] Tombol Load saved passengers membuka modal Select passeng
   if (await loadBtn.isVisible()) {
     await loadBtn.click();
     await page.waitForTimeout(500);
-    await expect(page.getByText('Select passenger').or(page.getByRole('dialog'))).toBeVisible({ timeout: 5000 });
+    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 5000 });
   }
 });
 

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { BASE_URL } from '../helpers/auth';
 
-const REVIEW_URL = `${BASE_URL}/#/flight/detail`;
+const REVIEW_URL = `${BASE_URL}/flight/detail`;
 
 /**
  * Review Your Flight tests - butuh session login + penerbangan yang sudah dipilih.

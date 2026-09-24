@@ -11,7 +11,7 @@ test('Profile - navbar tidak menampilkan tombol Login', async ({ page }) => {
 });
 
 test('Profile Individual - halaman tampil setelah login', async ({ page }) => {
-  await page.goto(`${BASE_URL}/#/individual`);
+  await page.goto(`${BASE_URL}/individual`);
   await page.waitForLoadState('networkidle');
 
   await expect(page.getByPlaceholder('Input email address')).toHaveCount(0, { timeout: 5000 });
@@ -19,7 +19,7 @@ test('Profile Individual - halaman tampil setelah login', async ({ page }) => {
 });
 
 test('Profile Company - halaman tampil setelah login', async ({ page }) => {
-  await page.goto(`${BASE_URL}/#/company`);
+  await page.goto(`${BASE_URL}/company`);
   await page.waitForLoadState('networkidle');
 
   await expect(page.getByPlaceholder('Input email address')).toHaveCount(0, { timeout: 5000 });
@@ -27,7 +27,7 @@ test('Profile Company - halaman tampil setelah login', async ({ page }) => {
 });
 
 test('Passenger - halaman tampil setelah login', async ({ page }) => {
-  await page.goto(`${BASE_URL}/#/passenger`);
+  await page.goto(`${BASE_URL}/passenger`);
   await page.waitForLoadState('networkidle');
 
   await expect(page.getByPlaceholder('Input email address')).toHaveCount(0, { timeout: 5000 });
@@ -35,7 +35,7 @@ test('Passenger - halaman tampil setelah login', async ({ page }) => {
 });
 
 test('Guest - halaman tampil setelah login', async ({ page }) => {
-  await page.goto(`${BASE_URL}/#/guest`);
+  await page.goto(`${BASE_URL}/guest`);
   await page.waitForLoadState('networkidle');
 
   await expect(page.getByPlaceholder('Input email address')).toHaveCount(0, { timeout: 5000 });
@@ -43,7 +43,7 @@ test('Guest - halaman tampil setelah login', async ({ page }) => {
 });
 
 test('Change Password - halaman tampil setelah login', async ({ page }) => {
-  await page.goto(`${BASE_URL}/#/change-password`);
+  await page.goto(`${BASE_URL}/change-password`);
   await page.waitForLoadState('networkidle');
 
   await expect(page.getByPlaceholder('Input email address')).toHaveCount(0, { timeout: 5000 });
@@ -51,7 +51,7 @@ test('Change Password - halaman tampil setelah login', async ({ page }) => {
 });
 
 test('Push Notification - halaman tampil setelah login', async ({ page }) => {
-  await page.goto(`${BASE_URL}/#/push-notification`);
+  await page.goto(`${BASE_URL}/push-notification`);
   await page.waitForLoadState('networkidle');
 
   await expect(page.getByPlaceholder('Input email address')).toHaveCount(0, { timeout: 5000 });
@@ -59,7 +59,7 @@ test('Push Notification - halaman tampil setelah login', async ({ page }) => {
 });
 
 test('Notification - halaman tampil setelah login', async ({ page }) => {
-  await page.goto(`${BASE_URL}/#/notification`);
+  await page.goto(`${BASE_URL}/notification`);
   await page.waitForLoadState('networkidle');
 
   await expect(page.getByPlaceholder('Input email address')).toHaveCount(0, { timeout: 5000 });
@@ -67,7 +67,7 @@ test('Notification - halaman tampil setelah login', async ({ page }) => {
 });
 
 test('Edit Profile - halaman tampil setelah login', async ({ page }) => {
-  await page.goto(`${BASE_URL}/#/profile`);
+  await page.goto(`${BASE_URL}/profile`);
   await page.waitForLoadState('networkidle');
 
   await expect(page.getByPlaceholder('Input email address')).toHaveCount(0, { timeout: 5000 });
@@ -75,7 +75,7 @@ test('Edit Profile - halaman tampil setelah login', async ({ page }) => {
 });
 
 test('Refund - halaman tampil setelah login', async ({ page }) => {
-  await page.goto(`${BASE_URL}/#/refund`);
+  await page.goto(`${BASE_URL}/refund`);
   await page.waitForLoadState('networkidle');
 
   await expect(page.getByPlaceholder('Input email address')).toHaveCount(0, { timeout: 5000 });
@@ -83,7 +83,7 @@ test('Refund - halaman tampil setelah login', async ({ page }) => {
 });
 
 test('Rating - halaman tampil setelah login', async ({ page }) => {
-  await page.goto(`${BASE_URL}/#/rating`);
+  await page.goto(`${BASE_URL}/rating`);
   await page.waitForLoadState('networkidle');
 
   await expect(page.getByPlaceholder('Input email address')).toHaveCount(0, { timeout: 5000 });
